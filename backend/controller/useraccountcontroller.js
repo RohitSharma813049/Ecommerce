@@ -66,7 +66,7 @@ const Logincontroller = async (req,res) =>{
     }
    
     const Token = jwt.sign({
-        
+       id: exists._id,
         email : exists.email ,
         role : exists.role
     },

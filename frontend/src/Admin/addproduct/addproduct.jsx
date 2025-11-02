@@ -98,13 +98,14 @@ const [product, setProduct] = useState({
   setLoading(true);
   console.log("Token used in fetch:", token);
 
-  const response = await fetch("http://localhost:6523/admin/products", {
-    method: "POST",
-   headers: {
-  Authorization: `Bearer ${token}`, // <-- Should be capital "Authorization"
-},
-    body: formData,
-  });
+const response = await fetch("http://localhost:6523/api/products/add", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+  body: formData,
+});
+
 
   if (response.status === 401) {
     // Unauthorized - token invalid or expired

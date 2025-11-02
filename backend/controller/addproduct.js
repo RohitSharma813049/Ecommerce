@@ -1,74 +1,69 @@
-const Product = require("../models/addproduct");
+const Product = require("../models/product");
 
-const addProduct = async (req, res) => {
+// Add a new product (Admin only)
+const addproduct = async (req, res) => {
   try {
+    // Only admin can add products
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied: only admin can add product",
+      });
+    }
+
     const {
       name,
       description,
       cutPrice,
-      offer = 0,
+      offer,
       price,
       category,
-      subCategory = "",  // optional field
-      stock = 0,
+      subCategory,
+      stock,
     } = req.body;
 
-    // Validate required fields
-    if (!name || !cutPrice || !price || !category) {
-      return res.status(400).json({ message: "Missing required fields." });
-    }
+    // Save uploaded file URL if file exists
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
 
-    // Convert to numbers
-    const cutPriceNum = Number(cutPrice);
-    const offerNum = Number(offer);
-    const priceNum = Number(price);
-    const stockNum = Number(stock);
-
-    // Validate number fields
-    if (isNaN(cutPriceNum) || isNaN(offerNum) || isNaN(priceNum) || isNaN(stockNum)) {
-      return res.status(400).json({ message: "Price, offer, and stock must be numbers." });
-    }
-
-    // Validate offer range
-    if (offerNum < 0 || offerNum > 100) {
-      return res.status(400).json({ message: "Offer must be between 0 and 100." });
-    }
-
-    // Validate price logic
-    if (priceNum > cutPriceNum) {
-      return res.status(400).json({ message: "Final price cannot exceed original price." });
-    }
-
-    // Check for uploaded image
-    if (!req.file) {
-      return res.status(400).json({ message: "Product image is required." });
-    }
-
-    // Prepare image URL
-    const imageUrl = `/uploads/${req.file.filename}`;
-
-    // Create new product
-    const newProduct = new Product({
+    const product = await Product.create({
       name,
       description,
-      cutPrice: cutPriceNum,
-      offer: offerNum,
-      price: priceNum,
+      cutPrice,
+      offer,
+      price,
       category,
-      subCategory,   // save subcategory here
-      stock: stockNum,
+      subCategory,
+      stock,
       imageUrl,
     });
 
-    await newProduct.save();
-
-    res.status(201).json({ message: "Product added successfully.", product: newProduct });
+    return res.status(201).json({
+      message: "Product added successfully",
+      product,
+    });
   } catch (error) {
-    console.error("Error adding product:", error);
-    res.status(500).json({ message: "Server error." });
+    return res.status(400).json({
+      message: "Error in addproduct",
+      error: error.message,
+    });
+  }
+};
+
+// Get all products
+const getAllProducts = async (req, res) => {
+  try {
+    // Fix: use sort() instead of toSorted()
+    const products = await Product.find().sort({ createdAt: -1 });
+
+    return res.status(200).json(products);
+  } catch (error) {
+    return res.status(400).json({
+      message: "Error fetching products",
+      error: error.message,
+    });
   }
 };
 
 module.exports = {
-  addProduct
+  addproduct,
+  getAllProducts,
 };

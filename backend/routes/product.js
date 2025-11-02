@@ -1,23 +1,13 @@
-const express = require("express");
-const router = express.Router();
-const productController = require("../controller/addproduct");
-const { verifyToken, verifyAdmin } = require("../middleware/auth");
-const multer = require("multer");
-const path = require("path");
+const express = require("express")
+const {  addproduct, getAllProducts } = require("../controller/addproduct")
+const {protect } = require("../middleware/auth")
+const upload = require("../middleware/uplodeMiddleware")
+const router = express.Router()
 
-// Setup multer storage for image uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Make sure this folder exists
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // unique filename with original extension
-  },
-});
+router.post("/add", protect, upload.single("image"), addproduct);
 
-const upload = multer({ storage });
 
-// Route to add a product (only accessible by admin, with image upload)
-router.post('/products', verifyToken, verifyAdmin, upload.single('image'), productController.addProduct);
+// Public route for all products
+router.get("/", getAllProducts);
 
 module.exports = router;

@@ -1,96 +1,102 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { FaTachometerAlt, FaUsers, FaShoppingCart, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { FaTachometerAlt, FaUsers, FaShoppingCart, FaCog, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import { logout } from "../../app/reducer/user";  // Adjust the import path if needed
+import { logout } from "../../app/reducer/user";
 
 export function AdminNavbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = () => {
-    // Dispatch logout action to clear auth state
     dispatch(logout());
-
-    // Clear token and user info from localStorage (if stored there)
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
-    // Redirect user to login page
     navigate("/login");
   };
 
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  const links = [
+    { to: "/", label: "Home", icon: null },
+    { to: "/admin/dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
+    { to: "/admin/users", label: "Users", icon: <FaUsers /> },
+    { to: "/admin/orders", label: "Orders", icon: <FaShoppingCart /> },
+    { to: "/admin/addproduct", label: "Add Product", icon: <FaCog /> },
+    { to: "/admin/products", label: "Product List", icon: <FaCog /> },
+  ];
+
   return (
-    <nav className="bg-gray-800 text-white flex items-center justify-between px-6 py-3">
-      <h2 className="text-2xl font-bold">Admin Panel</h2>
+    <nav className="bg-gray-800 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16 items-center">
+          {/* Logo / Title */}
+          <div className="flex-shrink-0 font-bold text-2xl">Admin Panel</div>
 
-      <ul className="flex space-x-6 items-center">
-        <li>
-          <NavLink
-            to="/admin/dashboard"
-            className={({ isActive }) =>
-              `flex items-center space-x-2 px-3 py-2 rounded hover:bg-gray-700 ${
-                isActive ? "bg-gray-700" : ""
-              }`
-            }
-          >
-            <FaTachometerAlt />
-            <span>Dashboard</span>
-          </NavLink>
-        </li>
+          {/* Desktop Menu */}
+          <div className="hidden md:flex space-x-4 items-center">
+            {links.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  `flex items-center space-x-1 px-3 py-2 rounded hover:bg-gray-700 ${
+                    isActive ? "bg-gray-700" : ""
+                  }`
+                }
+              >
+                {link.icon}
+                <span>{link.label}</span>
+              </NavLink>
+            ))}
 
-        <li>
-          <NavLink
-            to="/admin/users"
-            className={({ isActive }) =>
-              `flex items-center space-x-2 px-3 py-2 rounded hover:bg-gray-700 ${
-                isActive ? "bg-gray-700" : ""
-              }`
-            }
-          >
-            <FaUsers />
-            <span>Users</span>
-          </NavLink>
-        </li>
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 px-3 py-2 rounded bg-red-600 hover:bg-red-700 focus:outline-none"
+            >
+              <FaSignOutAlt />
+              <span>Logout</span>
+            </button>
+          </div>
 
-        <li>
-          <NavLink
-            to="/admin/orders"
-            className={({ isActive }) =>
-              `flex items-center space-x-2 px-3 py-2 rounded hover:bg-gray-700 ${
-                isActive ? "bg-gray-700" : ""
-              }`
-            }
-          >
-            <FaShoppingCart />
-            <span>Orders</span>
-          </NavLink>
-        </li>
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <button onClick={toggleMenu} className="text-white focus:outline-none text-2xl">
+              {isOpen ? <FaTimes /> : <FaBars />}
+            </button>
+          </div>
+        </div>
+      </div>
 
-        <li>
-          <NavLink
-            to="/admin/addproduct"
-            className={({ isActive }) =>
-              `flex items-center space-x-2 px-3 py-2 rounded hover:bg-gray-700 ${
-                isActive ? "bg-gray-700" : ""
-              }`
-            }
-          >
-            <FaCog />
-            <span>AddProduct</span>
-          </NavLink>
-        </li>
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-gray-900 px-2 pt-2 pb-3 space-y-1">
+          {links.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              onClick={() => setIsOpen(false)} // close menu after click
+              className={({ isActive }) =>
+                `flex items-center space-x-2 px-3 py-2 rounded hover:bg-gray-700 ${
+                  isActive ? "bg-gray-700" : ""
+                }`
+              }
+            >
+              {link.icon}
+              <span>{link.label}</span>
+            </NavLink>
+          ))}
 
-        <li>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 px-3 py-2 rounded bg-red-600 hover:bg-red-700 focus:outline-none"
+            className="flex items-center space-x-2 px-3 py-2 rounded bg-red-600 hover:bg-red-700 w-full mt-2"
           >
             <FaSignOutAlt />
             <span>Logout</span>
           </button>
-        </li>
-      </ul>
+        </div>
+      )}
     </nav>
   );
 }
