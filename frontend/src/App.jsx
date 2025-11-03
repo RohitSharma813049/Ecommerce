@@ -22,6 +22,8 @@ import { ProductDetails } from './Pages/product/productDetails';
 import NotFound from './Pages/pagenotfound/pagenotfound';
 
 import ProtectedRoute from './procatedroutes';
+          import CartPage from "./Pages/cart/cartpage"; // create this file
+import { ProductPage } from './Pages/product/ProductPage';
 
 
 function App() {
@@ -42,6 +44,8 @@ function App() {
         <Route path="/" element={<HomeLayout />}>
           <Route index element={<Home />} />
           <Route path="product/:id" element={<ProductDetails />} />
+        <Route path="products" element={<ProductPage />} />
+           <Route path="/cart" element={<CartPage />} />
         </Route>
 
         <Route path="/account" element={<AccountLayout />}>
