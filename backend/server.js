@@ -13,6 +13,8 @@ require("./config/db");
 // 🌐 Routes
 const userAccount = require("./routes/useraccount");
 const ProductRoutes = require("./routes/product");
+const CartRoutes = require("./routes/cart")
+const AddressRoutes = require("./routes/address")
 
 // ⚙️ Middleware
 app.use(bodyparser.json());
@@ -28,7 +30,8 @@ app.get("/", (req, res) => {
 
 app.use("/auth", userAccount);        // User authentication
 app.use("/api/products", ProductRoutes); // Products
-
+app.use("/auth",CartRoutes)
+app.use("/auth",AddressRoutes)
 // 🚀 Start server
 app.listen(Port, (error) => {
   if (error) {

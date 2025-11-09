@@ -1,31 +1,21 @@
+// controller/cartcontroller.js
 const Product = require("../models/product");
 const User = require("../models/usermodel");
 
-// 🛒 Add Product to Cart
+// Add to cart
 const addproductcart = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
 
     if (!userId || !productId) {
-      return res.status(400).json({
-        message: "Missing required fields",
-      });
+      return res.status(400).json({ message: "Missing userId or productId" });
     }
 
     const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // ✅ Get product price directly from DB
     const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({
-        message: "Product not found",
-      });
-    }
+    if (!product) return res.status(404).json({ message: "Product not found" });
 
     const existingItem = user.cart.find(
       (item) => item.product.toString() === productId
@@ -36,80 +26,49 @@ const addproductcart = async (req, res) => {
     } else {
       user.cart.push({
         product: productId,
-        price: product.price, // ✅ use actual product price
+        price: product.price,
         quantity: quantity || 1,
       });
     }
 
     await user.save();
-
-    return res.status(200).json({
-      message: "Product added to cart successfully",
-      cart: user.cart,
-    });
+    res.status(200).json({ message: "Product added to cart", cart: user.cart });
   } catch (error) {
     console.error("Error in addproductcart:", error);
-    return res.status(500).json({
-      message: "addproductcart not working",
-      error: error.message,
-    });
+    res.status(500).json({ message: "addproductcart not working", error: error.message });
   }
 };
 
-// 🧾 Get User Cart
+// Get cart
 const getproductcart = async (req, res) => {
   try {
     const { userId } = req.params;
-
     const user = await User.findById(userId).populate("cart.product");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
 
-    return res.status(200).json({
-      message: "Cart fetched successfully",
-      cart: user.cart,
-    });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ message: "Cart fetched successfully", cart: user.cart });
   } catch (error) {
     console.error("Error in getproductcart:", error);
-    return res.status(500).json({
-      message: "getproductcart not working",
-      error: error.message,
-    });
+    res.status(500).json({ message: "getproductcart not working", error: error.message });
   }
 };
 
-// ❌ Delete Product from Cart
+// Delete product
 const deleteproductcart = async (req, res) => {
   try {
     const { userId, productId } = req.body;
-
     const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.cart = user.cart.filter(
-      (item) => item.product.toString() !== productId
-    );
-
+    user.cart = user.cart.filter((item) => item.product.toString() !== productId);
     await user.save();
 
-    return res.status(200).json({
-      message: "Product removed from cart successfully",
-      cart: user.cart,
-    });
+    res.status(200).json({ message: "Product removed from cart", cart: user.cart });
   } catch (error) {
     console.error("Error in deleteproductcart:", error);
-    return res.status(500).json({
-      message: "deleteproductcart not working",
-      error: error.message,
-    });
+    res.status(500).json({ message: "deleteproductcart not working", error: error.message });
   }
 };
 
-module.exports = {
-  addproductcart,
-  getproductcart,
-  deleteproductcart,
-};
+module.exports = { addproductcart, getproductcart, deleteproductcart };

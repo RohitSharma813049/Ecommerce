@@ -4,7 +4,7 @@ const {
   addaddress,
   deleteaddress,
   getaddress,
-} = require("../controllers/addressController");
+} = require("../controller/addresscontroler");
 
 router.post("/address/add", addaddress);
 router.delete("/address/delete", deleteaddress);

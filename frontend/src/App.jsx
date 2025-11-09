@@ -17,7 +17,6 @@ import { AddProduct } from './Admin/addproduct/addproduct';
 import { ProductList } from './Admin/addproduct/productlist';
 
 import { ProductDetails } from './Pages/product/productDetails';
-import { ProductPage } from './Pages/product/ProductPage';
 import CartPage from "./Pages/cart/cartpage";
 
 import NotFound from './Pages/pagenotfound/pagenotfound';
@@ -41,7 +40,6 @@ function App() {
         <Route path="/" element={<HomeLayout />}>
           <Route index element={<Home />} />
           <Route path="product/:id" element={<ProductDetails />} />
-          <Route path="products" element={<ProductPage />} />
           <Route path="cart" element={<CartPage />} />
         </Route>
 
