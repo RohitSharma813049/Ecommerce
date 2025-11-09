@@ -1,11 +1,9 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { Routes, Route } from 'react-router-dom';
 
 import HomeLayout from './Pages/Home/homelayout';
 import Home from './Pages/Home/home';
-
 import { AccountLayout } from './Accounts/accountlayout';
 import { Login } from './Accounts/login';
 import { Register } from './Accounts/register';
@@ -19,16 +17,14 @@ import { AddProduct } from './Admin/addproduct/addproduct';
 import { ProductList } from './Admin/addproduct/productlist';
 
 import { ProductDetails } from './Pages/product/productDetails';
-import NotFound from './Pages/pagenotfound/pagenotfound';
-
-import ProtectedRoute from './procatedroutes';
-          import CartPage from "./Pages/cart/cartpage"; // create this file
 import { ProductPage } from './Pages/product/ProductPage';
+import CartPage from "./Pages/cart/cartpage";
 
+import NotFound from './Pages/pagenotfound/pagenotfound';
+import ProtectedRoute from './procatedroutes';
 
 function App() {
-  // Hooks inside the component — this is correct!
-  const role =  localStorage. getItem("role")
+  const role = localStorage.getItem("role");
 
   return (
     <>
@@ -41,13 +37,15 @@ function App() {
       />
 
       <Routes>
+        {/* Home Routes */}
         <Route path="/" element={<HomeLayout />}>
           <Route index element={<Home />} />
           <Route path="product/:id" element={<ProductDetails />} />
-        <Route path="products" element={<ProductPage />} />
-           <Route path="/cart" element={<CartPage />} />
+          <Route path="products" element={<ProductPage />} />
+          <Route path="cart" element={<CartPage />} />
         </Route>
 
+        {/* Account Routes */}
         <Route path="/account" element={<AccountLayout />}>
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
@@ -56,6 +54,7 @@ function App() {
           <Route path="resetpassword" element={<Resetpassword />} />
         </Route>
 
+        {/* Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
@@ -64,6 +63,7 @@ function App() {
           </Route>
         </Route>
 
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

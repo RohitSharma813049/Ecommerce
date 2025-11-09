@@ -1,4 +1,7 @@
 const mongoose = require("mongoose")
+const cartItemSchema = require("./cart")
+const userAddressSchema = require("./address")
+
 
 const  userSchema  =  new mongoose.Schema({
     name : {
@@ -30,7 +33,9 @@ const  userSchema  =  new mongoose.Schema({
     },
     resetTokenexpire : {
         type : Date
-    }
+    },
+    cart : [cartItemSchema],
+    address : [userAddressSchema]
 },
 {
     timestamps : true

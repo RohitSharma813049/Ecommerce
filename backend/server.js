@@ -1,29 +1,35 @@
 const express = require("express");
 require("dotenv").config();
-
-const path = require("path"); 
-const Port = process.env.PORT || 6523;  // default to 6523 if not set
+const path = require("path");
 const bodyparser = require("body-parser");
 const cors = require("cors");
+
 const app = express();
+const Port = process.env.PORT || 6523; // default port if not set
 
-const userAccount = require("./routes/useraccount");
-const ProductRoutes =  require("./routes/product")
-
-
+// 🗄️ Database connection
 require("./config/db");
 
+// 🌐 Routes
+const userAccount = require("./routes/useraccount");
+const ProductRoutes = require("./routes/product");
+
+// ⚙️ Middleware
 app.use(bodyparser.json());
 app.use(cors());
 
+// 🏠 Static folder for uploads
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// 🧩 Base routes
 app.get("/", (req, res) => {
-  return res.send("Welcome To App");
+  res.send("Welcome To App");
 });
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/auth", userAccount);
-app.use("/api/products",ProductRoutes)
+app.use("/auth", userAccount);        // User authentication
+app.use("/api/products", ProductRoutes); // Products
 
+// 🚀 Start server
 app.listen(Port, (error) => {
   if (error) {
     return console.log(`Error: ${error}`);
